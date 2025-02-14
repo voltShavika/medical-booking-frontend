@@ -25,6 +25,17 @@ export const registerUser = async (userData) => {
   }
 };
 
+export const getSpecialities = async (token, payload) => {
+  try {
+    const response = await api.get('/specialities', {
+      headers: { authorization: `${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error('Error fetching specialities');
+  }
+};
+
 export const getDoctors = async (token, payload) => {
   try {
     const response = await api.get('/doctors', {

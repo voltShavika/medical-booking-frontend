@@ -16,16 +16,16 @@ import axios from 'axios';
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {setError, setLoading} from "../../redux/appointmentSlice.js";
-import {getDoctors} from "../../api.js";
-import {setDoctors} from "../../redux/doctorSlice.js";
+import {getDoctors, getSpecialities} from "../../api.js";
+import {setDoctors, setSpecialities} from "../../redux/doctorSlice.js";
 
 const DoctorListPage = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const {doctors: doctors} = useSelector((state) => state.doctors);
+	const {doctors: doctors, specialities} = useSelector((state) => state.doctors);
 
 	const [selectedSpeciality, setSelectedSpeciality] = useState('');
-	const specialities = [...new Set(doctors.map((doctor) => doctor.speciality))];
+	// const specialities = [...new Set(doctors.map((doctor) => doctor.speciality))];
 	console.log("Doctors", doctors)
 	const token = localStorage.getItem('token');
 
@@ -33,6 +33,18 @@ const DoctorListPage = () => {
 		setSelectedSpeciality(event.target.value);
 	};
 
+	const fetchSpecialities = async () => {
+		dispatch(setLoading(true));
+		try {
+			const data = await getSpecialities(token);
+			// TODO alert here
+			dispatch(setSpecialities(data.data));
+		} catch (err) {
+			dispatch(setError(err.message));
+		} finally {
+			dispatch(setLoading(false));
+		}
+	};
 	const fetchDoctors = async () => {
 		const payload = {speciality: selectedSpeciality};
 		console.log("Payload", payload);
@@ -47,6 +59,12 @@ const DoctorListPage = () => {
 			dispatch(setLoading(false));
 		}
 	};
+
+	useEffect(() => {
+		if (token) {
+			fetchSpecialities();
+		}
+	}, [token]);
 
 	useEffect(() => {
 		if (token) {

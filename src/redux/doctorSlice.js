@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   doctors: [],
+  specialities: [],
   loading: false,
   error: null,
 };
@@ -13,6 +14,9 @@ const doctorSlice = createSlice({
     setDoctors(state, action) {
       state.doctors = action.payload;
     },
+    setSpecialities(state, action) {
+      state.specialities = action.payload;
+    },
     setLoading(state, action) {
       state.loading = action.payload;
     },
@@ -22,6 +26,6 @@ const doctorSlice = createSlice({
   },
 });
 
-export const { setDoctors, setLoading, setError } = doctorSlice.actions;
+export const { setDoctors, setSpecialities, setLoading, setError } = doctorSlice.actions;
 
 export default doctorSlice.reducer;

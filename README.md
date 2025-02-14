@@ -1,8 +1,33 @@
-# React + Vite
+## Medical Booking Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+#### Installation
 
-Currently, two official plugins are available:
+- `npm install`
+- `npm run dev`
+- Backend is linked in `api.js`, you change change the baseURL
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+There are following routes
+
+- / -> login
+- /register -> registration
+- /dashboard
+- /book-appointment
+- /edit-appointment
+- /doctors
+
+
+Following are protected url, login is need otherwise redirected to login page
+
+- dashboard
+- book-appointment
+- edit-appointment
+- doctors
+
+
+To Book appointment
+
+1. Select doctor name
+2. Available dates in next 7 days will be shown
+3. Selected Date
+4. Available time slots will be shown, Each time slot is 1 hour long

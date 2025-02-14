@@ -13,16 +13,22 @@ import { Route, Navigate } from 'react-router-dom';
 //   );
 // };
 
-const PrivateRoute = ({ component, ...rest }) => {
+const PrivateRoute = ({ element, ...rest }) => {
   const isAuthenticated = localStorage.getItem('token'); // Check if the user is authenticated
+  return isAuthenticated ? (
+    element
+  ) : (
+    <Navigate to="/" />
+  );
 
-  if (!isAuthenticated) {
-    // If the user is not authenticated, redirect them to the login page
-    return <Navigate to="/login" />;
-  }
-
-  // If the user is authenticated, render the element (passed Route component)
-  return component;
+  // return <Route {...rest} element={isAuthenticated ? element : <Navigate to={"/"} />} />
+  // if (!isAuthenticated) {
+  //   // If the user is not authenticated, redirect them to the login page
+  //   return <Navigate to="/login" />;
+  // }
+  //
+  // // If the user is authenticated, render the element (passed Route component)
+  // return component;
 };
 
 

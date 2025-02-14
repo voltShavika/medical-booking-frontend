@@ -4,12 +4,14 @@ import { configureStore } from '@reduxjs/toolkit';
 import userReducer from './userSlice';
 import appointmentReducer from './appointmentSlice';
 import doctorReducer from './doctorSlice';
+import alertReducer from './alertSlice.js';
 
 const store = configureStore({
   reducer: {
     user: userReducer,
     appointments: appointmentReducer,
-    doctors: doctorReducer
+    doctors: doctorReducer,
+    alert: alertReducer
   },
 });
 

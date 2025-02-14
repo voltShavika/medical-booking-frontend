@@ -2,12 +2,12 @@ import React, {useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {setAppointments, deleteAppointment, setLoading, setError} from '../../redux/appointmentSlice';
 import {getAppointments, deleteAppointment as deleteApiAppointment} from '../../api';
-import {Button, CircularProgress, Grid, Card, CardContent, Typography} from '@mui/material';
+import {Button, CircularProgress, Grid, Card, CardContent, Typography, Divider} from '@mui/material';
 import {useNavigate} from "react-router-dom";
 
 const UserDashboard = () => {
 	const dispatch = useDispatch();
-    const navigate = useNavigate();
+	const navigate = useNavigate();
 	const {items: appointments, loading, error} = useSelector((state) => state.appointments);
 	const token = localStorage.getItem('token');
 
@@ -43,25 +43,53 @@ const UserDashboard = () => {
 		}
 	};
 
-    const handleEdit = (appointment) => {
-      navigate('/edit-appointment', {state: appointment})
-    }
+	const handleEdit = (appointment) => {
+		navigate('/edit-appointment', {state: appointment})
+	}
 
 	return (
-		<div>
-			<h2>User Dashboard</h2>
-			{loading && <CircularProgress/>}
-			{error && <div>{error}</div>}
+		<div style={{padding: '20px'}}>
+			<h2 style={{textAlign: 'center', marginBottom: '20px'}}>User Dashboard</h2>
+
+
+			<h3 style={{textAlign: 'center', marginBottom: '20px'}}>Upcoming Appointments</h3>
+			<Divider style={{marginBottom: "10px"}}/>
+			{loading && <CircularProgress style={{display: 'block', margin: '0 auto'}}/>}
+			{error && <div style={{color: 'red', textAlign: 'center', marginBottom: '20px'}}>{error}</div>}
+
 			<Grid container spacing={3}>
+				{!loading && appointments.length === 0 && <Typography variant="h6" style={{textAlign: 'center', width: '100%', marginTop: "20px"}}>No appointments found</Typography>}
 				{appointments.map((appointment, i) => (
 					<Grid item xs={12} sm={6} md={4} key={i}>
-						<Card>
+						<Card style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
 							<CardContent>
-								<Typography variant="h6">{appointment.doctor.name}</Typography>
-								<Typography>{appointment.date}</Typography>
-								<Typography>{appointment.time}</Typography>
-								<Button onClick={() => handleEdit(appointment)}>Edit</Button>
-								<Button onClick={() => handleDelete(appointment._id)}>Delete</Button>
+								<Typography variant="h6" style={{marginBottom: '10px', fontWeight: 'bold'}}>
+									{appointment.doctor.name}
+								</Typography>
+								<Typography style={{marginBottom: '10px'}}>
+									<strong>Date:</strong> {appointment.date}
+								</Typography>
+								<Typography style={{marginBottom: '10px'}}>
+									<strong>Time:</strong> {appointment.time}
+								</Typography>
+								<div style={{display: 'flex', gap: '10px', marginTop: '10px'}}>
+									<Button
+										variant="contained"
+										color="primary"
+										size="small"
+										onClick={() => handleEdit(appointment)}
+									>
+										Edit
+									</Button>
+									<Button
+										variant="outlined"
+										color="error"
+										size="small"
+										onClick={() => handleDelete(appointment._id)}
+									>
+										Delete
+									</Button>
+								</div>
 							</CardContent>
 						</Card>
 					</Grid>

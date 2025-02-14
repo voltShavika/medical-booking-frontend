@@ -2,8 +2,10 @@ import React, {useState} from 'react';
 import {useDispatch} from 'react-redux';
 import {registerUser} from '../../api';
 import {loginUser as loginUserAction} from '../../redux/userSlice';
-import {Button, TextField} from '@mui/material';
+import {Box, Card, CardContent, TextField, Button, Typography, Paper} from '@mui/material';
+
 import {useNavigate} from 'react-router-dom';
+import {showAlert} from "../../redux/alertSlice.js";
 
 const RegisterPage = () => {
 	const dispatch = useDispatch();
@@ -18,25 +20,75 @@ const RegisterPage = () => {
 			const response = await registerUser({email, username, password});
 			if (response.status) {
 				dispatch(loginUserAction(response));
-				// history.push('/dashboard');
+				dispatch(showAlert({message: response.message || "Register Successful", severity: 'success'}))
 				navigate('/dashboard')
 			} else {
-				alert(response.message);
+				dispatch(showAlert({message: response.message || "Something went wrong", severity: 'error'}))
 			}
 		} catch (error) {
-			console.error(error.message);
+			dispatch(showAlert({message: error.message || "Something went wrong", severity: 'error'}))
 		}
 	};
 
 	return (
-		<div>
-			<h2>Register</h2>
-			<TextField label="Email" value={email} onChange={(e) => setEmail(e.target.value)} fullWidth/>
-			<TextField label="Username" value={username} onChange={(e) => setUsername(e.target.value)} fullWidth/>
-			<TextField label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-					   fullWidth/>
-			<Button onClick={handleRegister}>Register</Button>
-		</div>
+
+		<Box
+			display="flex"
+			justifyContent="center"
+			alignItems="center"
+			sx={{minHeight: '100vh', backgroundColor: '#f4f6f8'}}
+		>
+			<Card>
+				<CardContent>
+					<Typography variant="h5" align="center" sx={{marginBottom: '20px'}}>
+						Register
+					</Typography>
+
+					{/* Email Input */}
+					<TextField
+						label="Email"
+						type="email"
+						value={email}
+						onChange={(e) => setEmail(e.target.value)}
+						fullWidth
+						variant="outlined"
+						sx={{marginBottom: '20px'}}
+					/>
+
+					{/* Username Input */}
+					<TextField
+						label="Username"
+						value={username}
+						onChange={(e) => setUsername(e.target.value)}
+						fullWidth
+						variant="outlined"
+						sx={{marginBottom: '20px'}}
+					/>
+
+					{/* Password Input */}
+					<TextField
+						label="Password"
+						type="password"
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+						fullWidth
+						variant="outlined"
+						sx={{marginBottom: '20px'}}
+					/>
+
+					{/* Register Button */}
+					<Button
+						variant="contained"
+						color="primary"
+						fullWidth
+						onClick={handleRegister}
+						sx={{padding: '10px', marginTop: '20px'}}
+					>
+						Register
+					</Button>
+				</CardContent>
+			</Card>
+		</Box>
 	);
 };
 

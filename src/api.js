@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: 'https://medical-booking-backend-murex.vercel.app', // Backend API base URL
+  // baseURL: 'http://localhost:5000', // Backend API base URL
 });
 
 // User API Calls

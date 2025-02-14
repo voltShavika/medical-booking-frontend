@@ -25,9 +25,10 @@ export const registerUser = async (userData) => {
   }
 };
 
-export const getDoctors = async (token) => {
+export const getDoctors = async (token, payload) => {
   try {
     const response = await api.get('/doctors', {
+      params: payload,
       headers: { authorization: `${token}` },
     });
     return response.data;

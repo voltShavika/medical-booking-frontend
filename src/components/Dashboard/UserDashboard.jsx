@@ -4,10 +4,12 @@ import {setAppointments, deleteAppointment, setLoading, setError} from '../../re
 import {getAppointments, deleteAppointment as deleteApiAppointment} from '../../api';
 import {Button, CircularProgress, Grid, Card, CardContent, Typography, Divider} from '@mui/material';
 import {useNavigate} from "react-router-dom";
+import {showAlert} from "../../redux/alertSlice.js";
 
 const UserDashboard = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
+	const {user} = useSelector((state) => state.user);
 	const {items: appointments, loading, error} = useSelector((state) => state.appointments);
 	const token = localStorage.getItem('token');
 
@@ -33,11 +35,17 @@ const UserDashboard = () => {
 	const handleDelete = async (appointmentId) => {
 		dispatch(setLoading(true));
 		try {
-			await deleteApiAppointment(token, appointmentId);
-			fetchAppointments();
-			// dispatch(deleteAppointment(appointmentId));
+			const response = await deleteApiAppointment(token, appointmentId);
+			if(response.status){
+				fetchAppointments();
+				dispatch(showAlert({message: response.message, severity: 'success'}))
+			}
+			else{
+				dispatch(showAlert({message: response.message, severity: 'error'}))
+			}
+
 		} catch (err) {
-			dispatch(setError(err.message));
+			dispatch(showAlert({message: err.message, severity: 'error'}))
 		} finally {
 			dispatch(setLoading(false));
 		}
@@ -52,7 +60,7 @@ const UserDashboard = () => {
 			<h2 style={{textAlign: 'center', marginBottom: '20px'}}>User Dashboard</h2>
 
 
-			<h3 style={{textAlign: 'center', marginBottom: '20px'}}>Upcoming Appointments</h3>
+			<h3 style={{textAlign: 'center', marginBottom: '20px'}}>Upcoming {user?.username}'s Appointments</h3>
 			<Divider style={{marginBottom: "10px"}}/>
 			{loading && <CircularProgress style={{display: 'block', margin: '0 auto'}}/>}
 			{error && <div style={{color: 'red', textAlign: 'center', marginBottom: '20px'}}>{error}</div>}

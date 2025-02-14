@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {useDispatch} from 'react-redux';
+import bcrypt from 'bcryptjs';
 import {registerUser} from '../../api';
 import {loginUser as loginUserAction} from '../../redux/userSlice';
 import {Box, Card, CardContent, TextField, Button, Typography, Paper} from '@mui/material';
@@ -17,7 +18,8 @@ const RegisterPage = () => {
 
 	const handleRegister = async () => {
 		try {
-			const response = await registerUser({email, username, password});
+			const hashedPassword = bcrypt.hashSync(password, 10);
+			const response = await registerUser({email, username, password: hashedPassword});
 			if (response.status) {
 				dispatch(loginUserAction(response));
 				dispatch(showAlert({message: response.message || "Register Successful", severity: 'success'}))

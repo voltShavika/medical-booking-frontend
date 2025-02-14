@@ -5,6 +5,7 @@ import {setError, setLoading} from '../../redux/appointmentSlice';
 import {Button, Select, MenuItem, InputLabel, Box, Paper, Typography, Grid} from '@mui/material';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {setDoctors} from "../../redux/doctorSlice.js";
+import {showAlert} from "../../redux/alertSlice.js";
 
 const AppointmentEditPage = () => {
 	const dispatch = useDispatch();
@@ -21,7 +22,7 @@ const AppointmentEditPage = () => {
 
 	const {doctors: doctors} = useSelector((state) => state.doctors);
 	console.log("Doctors", doctors);
-	const availableDates = doctorId && doctors && doctors.length > 0 ? doctors.find((doctor) => doctor._id === doctorId)?.availableSlots : [];
+	const availableDates = doctorId && doctors && doctors.length > 0 ? doctors.find((doctor) => doctor._id === doctorId)?.availableSlots.filter(slot => slot.slots.length > 0) : [];
 	const availableTimes = date && availableDates && availableDates.length > 0 ? availableDates.find((availableDate) => availableDate.date === date)?.slots.concat(time) : [];
 
 	const token = localStorage.getItem('token');
@@ -79,16 +80,15 @@ const AppointmentEditPage = () => {
 			const token = localStorage.getItem('token');
 			const payload = {_id: appointment._id, doctorId, date, time};
 			const response = await updateAppointment(token, payload);
-			if (response.status) {
-				// dispatch(addAppointment(newAppointment));
-				// history.push('/dashboard');
+			if(response.status){
 				navigate('/dashboard')
-			} else {
-				alert(response.message);
+				dispatch(showAlert({message: response.message, severity: 'success'}))
 			}
-
+			else{
+				dispatch(showAlert({message: response.message, severity: 'error'}))
+			}
 		} catch (error) {
-			console.error('Error booking appointment:', error);
+			dispatch(showAlert({message: error.message, severity: 'error'}))
 		}
 	};
 
@@ -115,11 +115,12 @@ const AppointmentEditPage = () => {
 							onChange={handleDoctorChange}
 							fullWidth
 							variant="outlined"
+							disabled
 						>
 							<MenuItem value="">Select a Doctor</MenuItem>
 							{doctors.map((doctor, i) => (
 								<MenuItem key={i} value={doctor._id}>
-									{doctor.name}
+									{doctor.name} - {doctor.speciality}
 								</MenuItem>
 							))}
 						</Select>

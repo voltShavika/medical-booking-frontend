@@ -5,6 +5,7 @@ import {setError, setLoading} from '../../redux/appointmentSlice';
 import {Button, Select, MenuItem, InputLabel, Box, Paper, Typography, Grid} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 import {setDoctors} from "../../redux/doctorSlice.js";
+import {showAlert} from "../../redux/alertSlice.js";
 
 const AppointmentBookingPage = () => {
 	const dispatch = useDispatch();
@@ -14,7 +15,7 @@ const AppointmentBookingPage = () => {
 	const [time, setTime] = useState('');
 
 	const {doctors: doctors} = useSelector((state) => state.doctors);
-	const availableDates = doctorId ? doctors.find((doctor) => doctor._id === doctorId).availableSlots : [];
+	const availableDates = doctorId ? doctors.find((doctor) => doctor._id === doctorId).availableSlots.filter(slot => slot.slots.length > 0) : [];
 	const availableTimes = date ? availableDates.find((availableDate) => availableDate.date === date).slots : [];
 
 	const token = localStorage.getItem('token');
@@ -59,12 +60,17 @@ const AppointmentBookingPage = () => {
 		try {
 			const token = localStorage.getItem('token');
 			const appointment = {doctorId, date, time};
-			const newAppointment = await createAppointment(token, appointment);
-			// dispatch(addAppointment(newAppointment));
-			// history.push('/dashboard');
-			navigate('/dashboard')
+			const response = await createAppointment(token, appointment);
+			if(response.status){
+				navigate('/dashboard')
+				dispatch(showAlert({message: response.message, severity: 'success'}))
+			}
+			else{
+				dispatch(showAlert({message: response.message, severity: 'error'}))
+			}
+
 		} catch (error) {
-			console.error('Error booking appointment:', error);
+			dispatch(showAlert({message: error.message, severity: 'error'}))
 		}
 	};
 
@@ -94,7 +100,7 @@ const AppointmentBookingPage = () => {
 							<MenuItem value="">Select a Doctor</MenuItem>
 							{doctors.map((doctor, i) => (
 								<MenuItem key={i} value={doctor._id}>
-									{doctor.name}
+									{doctor.name} - {doctor.speciality}
 								</MenuItem>
 							))}
 						</Select>

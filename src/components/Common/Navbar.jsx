@@ -1,9 +1,14 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import {AppBar, Toolbar, Button} from '@mui/material';
 
 const Navbar = () => {
+	const navigate = useNavigate();
 	const token = localStorage.getItem('token');
+	const handleLogout = () => {
+		localStorage.removeItem('token');
+		navigate('/');
+	};
 	return (
 		<AppBar position="static">
 			<Toolbar>
@@ -30,6 +35,9 @@ const Navbar = () => {
 					token && <Link to="/doctors" style={{color: 'white', textDecoration: 'none'}}>
 						<Button color="inherit">Doctors</Button>
 					</Link>
+				}
+				{
+					token && <Button color="error" variant="contained" onClick={handleLogout}>Logout</Button>
 				}
 
 			</Toolbar>

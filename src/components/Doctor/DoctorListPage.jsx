@@ -9,7 +9,7 @@ import {
 	Paper,
 	Chip,
 	Typography,
-	Box, Accordion, AccordionSummary, AccordionDetails
+	Box, Accordion, AccordionSummary, AccordionDetails, FormControl, InputLabel, Select, MenuItem
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import axios from 'axios';
@@ -23,13 +23,22 @@ const DoctorListPage = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const {doctors: doctors} = useSelector((state) => state.doctors);
+
+	const [selectedSpeciality, setSelectedSpeciality] = useState('');
+	const specialities = [...new Set(doctors.map((doctor) => doctor.speciality))];
 	console.log("Doctors", doctors)
 	const token = localStorage.getItem('token');
 
+	const handleFilterChange = (event) => {
+		setSelectedSpeciality(event.target.value);
+	};
+
 	const fetchDoctors = async () => {
+		const payload = {speciality: selectedSpeciality};
+		console.log("Payload", payload);
 		dispatch(setLoading(true));
 		try {
-			const data = await getDoctors(token);
+			const data = await getDoctors(token, payload);
 			// TODO alert here
 			dispatch(setDoctors(data.data));
 		} catch (err) {
@@ -43,7 +52,7 @@ const DoctorListPage = () => {
 		if (token) {
 			fetchDoctors();
 		}
-	}, [token]);
+	}, [token, selectedSpeciality]);
 
 	const renderPills = (dates) => {
 		return dates.map((date, index) => (
@@ -64,7 +73,28 @@ const DoctorListPage = () => {
 			<Typography variant="h5" align="center" sx={{marginBottom: '20px'}}>
 				Doctors List
 			</Typography>
-
+			<Box sx={{marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+				<FormControl variant="outlined" sx={{minWidth: 200}}>
+					<InputLabel>Speciality</InputLabel>
+					<Select
+						label="Speciality"
+						value={selectedSpeciality}
+						onChange={handleFilterChange}
+						fullWidth
+					>
+						<MenuItem value="">
+							<em>All</em>
+						</MenuItem>
+						{
+							specialities.map((speciality, index) => (
+								<MenuItem key={index} value={speciality}>
+									{speciality}
+								</MenuItem>
+							))
+						}
+					</Select>
+				</FormControl>
+			</Box>
 			<TableContainer component={Paper}>
 				<Table sx={{minWidth: 650}} aria-label="doctors table">
 					<TableHead>
